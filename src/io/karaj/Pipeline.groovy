@@ -40,11 +40,11 @@ def helmConfig() {
 
 def containerBuildPub(Map args) {
 
-    println "Running Docker build/publish: ${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}"
+    println "Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
 
     container('gcloud') { 
        println "[Pipeline.groovy] building docker container..."
-       sh" docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
+       sh"docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
     }
 }
 
