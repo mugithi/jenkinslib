@@ -14,6 +14,11 @@ def commitHash() {
     return hash
 }
 
+def getGCPCredentials(String credentials) {
+    withCredentials([file(credentialsId: credentials, variable: 'GOOGLE_KEY')]) {
+        return sh(returnStdout: true, script:'cat ${GOOGLE_KEY}')
+}
+
 def helmLint(String chart_dir) {
     // lint helm chart
     println "[Pipeline.groovy] Check running nodes"
@@ -33,6 +38,17 @@ def helmConfig() {
     sh "helm version"
 }
 
+def containerBuildPub(Map args) {
+
+    println "Running Docker build/publish: ${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}"
+
+    container('gcloud') { 
+       println "[Pipeline.groovy] building docker container..."
+       sh" docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
+    }
+}
+
+
 def helmDeploy(Map args) {
     //configure helm client and confirm tiller process is installed
     helmConfig()
@@ -47,11 +63,11 @@ def helmDeploy(Map args) {
     }
 
     if (args.dry_run) {
-        println "Running dry-run deployment"
+        println "[Pipeline.groovy] Running dry-run deployment"
 
         sh "helm upgrade --dry-run --install ${args.name} ${args.chart_dir} --set imageTag=${args.version_tag},replicas=${args.replicas},cpu=${args.cpu},memory=${args.memory},ingress.hostname=${args.hostname} --namespace=${namespace}"
     } else {
-        println "Running deployment"
+        println "[Pipeline.groovy] Running deployment"
 
         // reimplement --wait once it works reliable
         sh "helm upgrade --install ${args.name} ${args.chart_dir} --set imageTag=${args.version_tag},replicas=${args.replicas},cpu=${args.cpu},memory=${args.memory},ingress.hostname=${args.hostname} --namespace=${namespace}"
@@ -59,7 +75,7 @@ def helmDeploy(Map args) {
         // sleeping until --wait works reliably
         sleep(20)
 
-        echo "Application ${args.name} successfully deployed. Use helm status ${args.name} to check"
+        echo "[Pipeline.groovy] Application ${args.name} successfully deployed. Use helm status ${args.name} to check"
     }
 }
 
@@ -74,7 +90,6 @@ def helmTest(Map args) {
 
     sh "helm test ${args.name} --cleanup"
 }
-
 
 
 def gitEnvVars() {
@@ -100,22 +115,6 @@ def gitEnvVars() {
 }
 
 
-def containerBuildPub(Map args) {
-
-    println "Running Docker build/publish: ${args.host}/${args.acct}/${args.repo}:${args.tags}"
-
-    docker.withRegistry("https://${args.host}", "${args.auth_id}") {
-
-        // def img = docker.build("${args.acct}/${args.repo}", args.dockerfile)
-        def img = docker.image("${args.acct}/${args.repo}")
-        sh "docker build --build-arg VCS_REF=${env.GIT_SHA} --build-arg BUILD_DATE=`date -u +'%Y-%m-%dT%H:%M:%SZ'` -t ${args.acct}/${args.repo} ${args.dockerfile}"
-        for (int i = 0; i < args.tags.size(); i++) {
-            img.push(args.tags.get(i))
-        }
-
-        return img.id
-    }
-}
 
 def getContainerTags(config, Map tags = [:]) {
 
