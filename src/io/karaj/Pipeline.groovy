@@ -20,7 +20,8 @@ def helmLint(String chart_dir) {
     sh "helm list"
     println "[Pipeline.groovy] Perform helm chart dry run"
     println "[Pipeline.groovy] Running helm lint ${chart_dir}"
-    sh "helm install ${chart_dir} --dry-run --debug"
+    // sh "helm install ${chart_dir} --dry-run --debug"
+    sh "helm lint ${chart_dir}"
 }
 
 def helmConfig() {
