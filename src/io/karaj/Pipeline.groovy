@@ -21,6 +21,7 @@ def helmLint(String chart_dir) {
     println "[Pipeline.groovy] Perform helm chart dry run"
     println "[Pipeline.groovy] Running helm lint ${chart_dir}"
     // sh "helm install ${chart_dir} --dry-run --debug"
+    sh "ls -al ${chart_dir}"
     sh "helm lint ${chart_dir}"
 }
 
