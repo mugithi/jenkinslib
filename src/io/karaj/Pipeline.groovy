@@ -3,31 +3,31 @@ package io.karaj;
 
 def kubectlTest() {
     // Test that kubectl can correctly communication with the Kubernetes API
-    println "checking kubectl connnectivity to the API"
+    println "[Pipeline.groovy] Checking kubectl connnectivity to the API"
     sh "kubectl get nodes"
 
 }
 
 def commitHash() {
     hash=sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-    println "[Jenkinsfile INFO] Commit Hash is ${hash}"
+    println "[Pipeline.groovy] Commit Hash is ${hash}"
     return hash
 }
 
 def helmLint(String chart_dir) {
     // lint helm chart
-    println "Pipeline.groovy: Check running nodes"
+    println "[Pipeline.groovy] Check running nodes"
     sh "helm list"
-    println "Pipeline.groovy: Perform helm chart dry run"
-    println "Pipeline.groovy: Running helm lint ${chart_dir}"
+    println "[Pipeline.groovy] Perform helm chart dry run"
+    println "[Pipeline.groovy] Running helm lint ${chart_dir}"
     sh "helm install ${chart_dir} --dry-run --debug"
 }
 
 def helmConfig() {
     //setup helm connectivity to Kubernetes API and Tiller
-    println "print helm version"
+    println "[Pipeline.groovy] Print helm version"
     sh "helm init --service-account=jenkins --client-only" 
-    println "checking client/server version"
+    println "[Pipeline.groovy] Checking client/server version"
     sh "helm version"
 }
 
@@ -72,6 +72,8 @@ def helmTest(Map args) {
 
     sh "helm test ${args.name} --cleanup"
 }
+
+
 
 def gitEnvVars() {
     // create git envvars
