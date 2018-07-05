@@ -10,15 +10,17 @@ def kubectlTest() {
 
 def helmLint(String chart_dir) {
     // lint helm chart
-    println "running helm lint ${chart_dir}"
-    sh "helm lint ${chart_dir}"
-
+    println "Pipeline.groovy: Check running nodes"
+    sh "helm list"
+    println "Pipeline.groovy: Perform helm chart dry run"
+    println "Pipeline.groovy: Running helm lint ${chart_dir}"
+    sh "helm install ${chart_dir} --dry-run --debug"
 }
 
 def helmConfig() {
     //setup helm connectivity to Kubernetes API and Tiller
-    println "initiliazing helm client"
-    sh "helm init"
+    println "print helm version"
+    sh "helm init --service-account=jenkins --client-only" 
     println "checking client/server version"
     sh "helm version"
 }
