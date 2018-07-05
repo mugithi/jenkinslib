@@ -8,6 +8,12 @@ def kubectlTest() {
 
 }
 
+def commitHash() {
+    hash=sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+    println "[Jenkinsfile INFO] Commit Hash is ${hash}"
+    return hash
+}
+
 def helmLint(String chart_dir) {
     // lint helm chart
     println "Pipeline.groovy: Check running nodes"
@@ -24,7 +30,6 @@ def helmConfig() {
     println "checking client/server version"
     sh "helm version"
 }
-
 
 def helmDeploy(Map args) {
     //configure helm client and confirm tiller process is installed
