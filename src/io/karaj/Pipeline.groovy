@@ -38,6 +38,15 @@ def helmConfig() {
     sh "helm version"
 }
 
+def containerBuildPub(Map args) {
+
+    println "Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
+
+    container('gcloud') { 
+       println "[Pipeline.groovy] building docker container..."
+       sh"docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
+    }
+}
 
 
 def helmDeploy(Map args) {
@@ -172,18 +181,3 @@ def getContainerRepoAcct(config) {
     return acct
 }
 
-@NonCPS
-def getMapValues(Map map=[:]) {
-    // jenkins and workflow restriction force this function instead of map.values(): https://issues.jenkins-ci.org/browse/JENKINS-27421
-    def entries = []
-    def map_values = []
-
-    entries.addAll(map.entrySet())
-
-    for (int i=0; i < entries.size(); i++){
-        String value =  entries.get(i).value
-        map_values.add(value)
-    }
-
-    return map_values
-}
