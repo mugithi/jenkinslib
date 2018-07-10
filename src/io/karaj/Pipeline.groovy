@@ -180,4 +180,3 @@ def getContainerRepoAcct(config) {
 
     return acct
 }
-
