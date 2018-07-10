@@ -19,34 +19,34 @@ def getGCPCredentials(String credentials) {
         return sh(returnStdout: true, script:'cat ${GOOGLE_KEY}')
 }
 
-def helmLint(String chart_dir) {
-    // lint helm chart
-    println "[Pipeline.groovy] Check running nodes"
-    sh "helm list"
-    println "[Pipeline.groovy] Perform helm chart dry run"
-    println "[Pipeline.groovy] Running helm lint '${chart_dir}'"
-    // sh "helm install ${chart_dir} --dry-run --debug"
-    sh "ls -al '${chart_dir}'"
-    sh "helm lint '${chart_dir}'"
-}
+// def helmLint(String chart_dir) {
+//     // lint helm chart
+//     println "[Pipeline.groovy] Check running nodes"
+//     sh "helm list"
+//     println "[Pipeline.groovy] Perform helm chart dry run"
+//     println "[Pipeline.groovy] Running helm lint '${chart_dir}'"
+//     // sh "helm install ${chart_dir} --dry-run --debug"
+//     sh "ls -al '${chart_dir}'"
+//     sh "helm lint '${chart_dir}'"
+// }
 
-def helmConfig() {
-    //setup helm connectivity to Kubernetes API and Tiller
-    println "[Pipeline.groovy] Print helm version"
-    sh "helm init --service-account=jenkins --client-only" 
-    println "[Pipeline.groovy] Checking client/server version"
-    sh "helm version"
-}
+// def helmConfig() {
+//     //setup helm connectivity to Kubernetes API and Tiller
+//     println "[Pipeline.groovy] Print helm version"
+//     sh "helm init --service-account=jenkins --client-only" 
+//     println "[Pipeline.groovy] Checking client/server version"
+//     sh "helm version"
+// }
 
-def containerBuildPub(Map args) {
+// def containerBuildPub(Map args) {
 
-    println "Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
+//     println "Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
 
-    container('gcloud') { 
-       println "[Pipeline.groovy] building docker container..."
-       sh"docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
-    }
-}
+//     container('gcloud') { 
+//        println "[Pipeline.groovy] building docker container..."
+//        sh"docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
+//     }
+// }
 
 
 def helmDeploy(Map args) {
