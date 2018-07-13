@@ -15,7 +15,8 @@ def commitHash() {
 }
 
 def getGCPCredentials(String credentials) {
-    withCredentials([file(credentialsId: credentials, variable: 'GOOGLE_KEY')]) {
+    println "[Pipeline.groovy] credentials token are ${credentials}" 
+    withCredentials([file(credentialsId: 'GOOGLE_APPLICATION_CREDENTIALS', variable: 'GOOGLE_KEY')]) {
         return sh(returnStdout: true, script:'cat ${GOOGLE_KEY}')
     }
 }
@@ -40,9 +41,7 @@ def helmConfig() {
 }
 
 def containerBuildPub(Map args) {
-
     println "Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
-
     container('gcloud') { 
        println "[Pipeline.groovy] building docker container..."
        sh"docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
