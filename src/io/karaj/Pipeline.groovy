@@ -16,7 +16,7 @@ def commitHash() {
 
 def getGCPCredentials(String credentials) {
     println "[Pipeline.groovy] credentials token are ${credentials}" 
-    withCredentials([file(credentialsId: 'GOOGLE_APPLICATION_CREDENTIALS', variable: 'GOOGLE_KEY')]) {
+    withCredentials([file(credentialsId:'GOOGLE_APPLICATION_CREDENTIALS', variable: 'GOOGLE_KEY')]) {
         return sh(returnStdout: true, script:'cat ${GOOGLE_KEY}')
     }
 }
