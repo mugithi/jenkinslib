@@ -41,11 +41,18 @@ def helmConfig() {
 }
 
 def containerBuildPub(Map args) {
-    println "Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
+    println "[Pipeline.groovy] Running Docker build/publish: '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}'"
     container('gcloud') { 
        println "[Pipeline.groovy] building docker container..."
        sh"docker build -t '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' . "
+       
+       println "[Pipeline.groovy] publishing docker container..."
+
+       def GCS_KEY_FILE=getGCPCredentials(args.GOOGLECREDS)
+       sh "docker login -u _json_key -p '${GCS_KEY_FILE}' https://gcr.io "
+       sh "docker push '${args.GCRREPOURL}/${args.APP01PROJECT}/${args.APP01NAME}:${args.BUILD_TAG}' "
     }
+
 }
 
 
